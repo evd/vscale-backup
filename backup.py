@@ -73,7 +73,7 @@ log.info('Get %d backups for scalet', len(backups))
 backups = sorted(backups, key=lambda d: d['created'])
 
 # One backup is created, so if we want keep 1 backup we need remove all backups + one is queue for create
-backups_for_remove = backups[:len(backups) - args.count - 1]
+backups_for_remove = backups[:len(backups) - (args.count - 1)]
 if len(backups_for_remove):
     for backup in backups_for_remove:
         log.info('Remove backup %s %s', backup['name'], backup['id'])
