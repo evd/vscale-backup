@@ -37,8 +37,9 @@ if not token:
 backup_prefix = (args.name or args.scalet + '_auto')
 backup_name = backup_prefix + '_' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
+
 # Make request to VScale API
-def api_request(method, url, json = {}):
+def api_request(method, url, json={}):
     response = requests.request(
         method,
         'https://api.vscale.io/v1/' + url,
@@ -53,9 +54,11 @@ def api_request(method, url, json = {}):
 
     return response.json()
 
+
 log.info('Make backup %s for scalet %s', backup_name, args.scalet)
-response = api_request('post', 'scalets/{0}/backup'.format(args.scalet), json={'name': backup_name })
+response = api_request('post', 'scalets/{0}/backup'.format(args.scalet), json={'name': backup_name})
 if response and 'id' in response:
+    new_backup_id = response['id']
     log.info('Backup queued with id %s', response['id'])
 else:
     log.error('Failed make backup')
@@ -68,7 +71,13 @@ if not backups:
     log.error('Failed get backups')
     sys.exit(1)
 
-backups = list(filter(lambda item: item['status'] == 'finished' and str(item['scalet']) == args.scalet and not item['is_deleted'] and item['name'].startswith(backup_prefix), backups))
+backups = list(filter(lambda item:
+                      item['id'] != new_backup_id
+                      and item['status'] == 'finished'
+                      and str(item['scalet']) == args.scalet
+                      and not item['is_deleted']
+                      and item['name'].startswith(backup_prefix), backups
+                      ))
 log.info('Get %d backups for scalet', len(backups))
 backups = sorted(backups, key=lambda d: d['created'])
 
