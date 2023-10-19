@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Set up log for duplicate stdout and backup file
-logging.basicConfig(filename='backup.log', format='%(asctime)s : %(levelname)-8s %(message)s')
+logfile = os.environ.get('LOG_FILE') or 'backup.log'
+logging.basicConfig(filename=logfile, format='%(asctime)s : %(levelname)-8s %(message)s')
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
